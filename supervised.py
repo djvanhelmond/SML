@@ -17,7 +17,7 @@
 def gen_xy(x=0, Noise=False):
     # Define a polynomial for generating the sets
     # f(x) = c0 + C1 * x + c1 * x^2 + c2 * X^3 ...etc.
-    c = [4, 3, 6, 1, 0, 0]
+    c = [400, 300, 200, 100, 0, 0]
     import random
     import math
     # If no x is passed into the function given then x will be random.
