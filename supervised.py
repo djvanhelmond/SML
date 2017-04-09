@@ -14,23 +14,32 @@
 
 
 # We use this generator to make sure training set and testing set are independent and identically distributed.
-# We select a random X, and create a Y where Y = X**3 + a bit of noise.
-def gen_xy():
+def gen_xy(x=0, Noise=False):
+    # Define a polynomial for generating the sets
+    # f(x) = c0 + C1 * x + c1 * x^2 + c2 * X^3 ...etc.
+    c = [4, 3, 6, 1, 0, 0]
     import random
-    x = random.randint(10, 1000)
-    y = x ** 3 + (random.randint(-1, 1) * random.random() * 10)
+    import math
+    # If no x is passed into the function given then x will be random.
+    if x == 0:
+        x = random.randint(1, 1000)
+    # Y is f(x)
+    y = (c[0]) + (c[1] * x ** 2) + (c[2] * x ** 3) + (c[3] * x ** 4) + (c[4] * x ** 6) + (c[5] * x ** 6)
+    # We might want to add some noise to y so that we have some deviation in the training and test sets
+    if Noise:
+        y += (random.randint(-1, 1) * random.random() * math.sqrt(x))
     return x, y
 
-### Generate training set with 20 elements
+### Generate a training set with 20 elements
 training_set = {}
 for _ in range(0,20):
-    x, y = gen_xy()
+    x, y = gen_xy(Noise=True)
     training_set[x] = y
 
-### Generate testing set with 20 elements
+### Generate a testing set with 20 elements
 testing_set = {}
 for _ in range(0,20):
-    x, y = gen_xy()
+    x, y = gen_xy(Noise=True)
     testing_set[x] = y
 
 
@@ -107,10 +116,10 @@ print("Average error on test set   : ", error/len(testing_set))
 print("===")
 
 # Input a real world value
-val = 6000
+val = 600
 print("Realworld input value       : ", val)
 print("Supervised ML prediction    : ", m.predict(val))
-print("Actual value                : ", val**3)
+print("Actual calculated value     : ", gen_xy(val)[1])
 
 
 
