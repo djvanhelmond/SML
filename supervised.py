@@ -52,17 +52,17 @@ class regressive_supervised_ML():
         print("Function selected           : ", list(self.function))
         print("Best fitting function order : ", self.function_order)
         print("Training loss function      : ", self.loss)
-        test_loss = 0
-        for k, v in testing_set.items():
-            test_loss += math.sqrt(abs(int(self.predict(k)) - v))
-        print("Average error on test set   : ", test_loss / len(testing_set))
+#        test_loss = 0
+#        for k, v in testing_set.items():
+#            test_loss += math.sqrt(abs(int(self.predict(k)) - v))
+#        print("Average error on test set   : ", test_loss / len(testing_set))
 
     # Fit the polynomial on the data (regression)
     def find_function(self, order):
-        from numpy.polynomial import polynomial as P
+        from numpy.polynomial.polynomial import polyfit
         x = list(self.data.keys())
         y = list(self.data.values())
-        c, stats = P.polyfit(x, y, order, full=True)
+        c = polyfit(x, y, order, full=True)[0]
         return c
 
     # calculate the loss function of a given polynomial over the training data
@@ -88,8 +88,10 @@ class regressive_supervised_ML():
                 self.loss = loss
                 ### TODO: add check so that the x100 improvement is related to (order-1)
 
+    # After updating the data set, we need to re-map the polynomial to the data set
     def regenerate_polymonial(self):
         self.function = self.find_function(self.function_order)  # map the current order polynomial on the new data
+        self.loss = self.calc_loss(self.function)
 
     # use the Regression SML model to make predictions
     def predict(self, x):
