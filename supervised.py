@@ -29,41 +29,33 @@ def gen_xy(x=0, Noise=False):
     y = (c[0]) + (c[1] * x ** 2) + (c[2] * x ** 3) + (c[3] * x ** 4) + (c[4] * x ** 6) + (c[5] * x ** 6)
     # We might want to add some noise to y so that we have some deviation in the training and test sets
     if Noise:
-        y += (random.randint(-1, 1) * random.random() * math.sqrt(x))
+        y += (random.randint(-1, 1) * random.random() * math.sqrt(x) * 5)
     return x, y
-
-### Generate a training set with 20 elements
-training_set = {}
-for _ in range(0,20):
-    x, y = gen_xy(Noise=True)
-    training_set[x] = y
-
-### Generate a testing set with 20 elements
-testing_set = {}
-for _ in range(0,20):
-    x, y = gen_xy(Noise=True)
-    testing_set[x] = y
 
 
 ### Class that contains all the ML related functions
 class regressive_supervised_ML():
     def __init__(self, ts):
-        self.data = {}
+        self.data = ts
         self.function = []
         self.function_order = None
         self.loss = 9999999999999999
-        self.load_set(ts)
         self.pick_order()
 
     ### load the training set
-    def load_set(self, ts):
-        self.data = ts
+    def add_pair_to_set(self, pair):
+        self.data[pair[0]] = pair[1]
 
     ### print all Regression SML information
     def stats(self):
+        import math
         print("Function selected           : ", list(self.function))
         print("Best fitting function order : ", self.function_order)
-        print("Loss function               : ", self.loss)
+        print("Training loss function      : ", self.loss)
+        test_loss = 0
+        for k, v in testing_set.items():
+            test_loss += math.sqrt(abs(int(self.predict(k)) - v))
+        print("Average error on test set   : ", test_loss / len(testing_set))
 
     # Fit the polynomial on the data (regression)
     def find_function(self, order):
@@ -95,33 +87,53 @@ class regressive_supervised_ML():
                 self.function_order = order
                 self.loss = loss
 
+    def regenerate_polymonial(self):
+        self.function = self.find_function(self.function_order)  # map the n-th order polynomial on the data
+
     # use the Regression SML model to make predictions
     def predict(self, x):
         from numpy.polynomial.polynomial import polyval
         return polyval(x, self.function)
 
 
+### Generate a training set with 20 elements
+training_set = {}
+for _ in range(0,20):
+    x, y = gen_xy(Noise=True)
+    training_set[x] = y
+
+### Generate a testing set with 20 elements
+testing_set = {}
+for _ in range(0,20):
+    x, y = gen_xy(Noise=True)
+    testing_set[x] = y
+
+
 ### Create regressive supervised Machine Learning object
-m = regressive_supervised_ML(training_set)
+sml = regressive_supervised_ML(training_set)
 print("Example of Regression based Supervised Machine Learning")
-print("-------------------------------------------------------")
-m.stats()
 
-# Validate against testing set and measure the error
-error = 0
-for k,v in testing_set.items():
-    p = int(m.predict(k))
-    e = abs(p - v)
-    error += e
-#    print("for key %i the value should be %i. Model predicts %i, error: %i" % (k, v, p, e))
-print("Average error on test set   : ", error/len(testing_set))
-print("===")
+input_key=0
+while input_key != 2:
+    print("-------------------------------------------------------")
+    sml.stats()
+    print("-------------------------------------------------------")
+    print("0: Give a prediction")
+    print("1: Add a value")
+    print("2: Exit")
+    input_key = int(input("Press a number and then Enter to continue: "))
+    if input_key == 0:
+        val = int(input("Give a value to predict outcome: "))
+        print("Realworld input value       : ", val)
+        print("Supervised ML prediction    : ", sml.predict(val))
+        print("Actual calculated value     : ", gen_xy(val)[1])
+    if input_key == 1:
+        x_val = int(input("Give x value: "))
+        y_val = int(input("Give y value: "))
+        sml.add_pair_to_set((x_val, y_val))
+        sml.regenerate_polymonial()
 
-# Input a real world value
-val = 600
-print("Realworld input value       : ", val)
-print("Supervised ML prediction    : ", m.predict(val))
-print("Actual calculated value     : ", gen_xy(val)[1])
+
 
 
 
