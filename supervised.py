@@ -89,7 +89,7 @@ class regressive_supervised_ML():
                 ### TODO: add check so that the x100 improvement is related to (order-1)
 
     def regenerate_polymonial(self):
-        self.function = self.find_function(self.function_order)  # map the n-th order polynomial on the data
+        self.function = self.find_function(self.function_order)  # map the current order polynomial on the new data
 
     # use the Regression SML model to make predictions
     def predict(self, x):
