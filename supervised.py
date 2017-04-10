@@ -86,6 +86,7 @@ class regressive_supervised_ML():
                 self.function = function
                 self.function_order = order
                 self.loss = loss
+                ### TODO: add check so that the x100 improvement is related to (order-1)
 
     def regenerate_polymonial(self):
         self.function = self.find_function(self.function_order)  # map the n-th order polynomial on the data
